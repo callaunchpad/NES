@@ -19,6 +19,11 @@ class FeedForwardNeuralNetwork():
 		self.params = tf.placeholder(tf.float32)
 
 	def model(self):
+		"""
+		Builds Tensorflow graph
+		Returns:
+			(tensor): Output Tensor for the graph
+		"""
 		start = 0
 		weights = tf.reshape(self.params[start : self.config['input_size'] * self.config['n_nodes_per_layer']], [self.config['input_size'], self.config['n_nodes_per_layer']])
 		start += self.config['input_size'] * self.config['n_nodes_per_layer']
@@ -41,6 +46,11 @@ class FeedForwardNeuralNetwork():
 		return output_layer
 
 	def init_master_params(self):
+		"""
+		Computes initial random gaussian values for master weights and biases
+		Returns:
+			(float array): Random gaussian values for neural network weights and biases
+		"""
 		master_params = []
 		weights = np.random.normal(0, 1, self.config['input_size'] * self.config['n_nodes_per_layer'])
 		master_params += list(weights)
@@ -60,4 +70,9 @@ class FeedForwardNeuralNetwork():
 		return master_params
 
 	def feed_dict(self, inputs, params):
+		"""
+		Fills the feed_dict for the Tensorflow graph
+		Returns:
+			(dict): Feed_dict filled with given values for placeholders
+		"""
 		return {self.inputs: inputs, self.params: params}
