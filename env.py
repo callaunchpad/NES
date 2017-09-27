@@ -39,6 +39,11 @@ class Maze():
 		self.current = self.start
 
 	def solution_exists(self):
+		"""
+		BFS to check if solution exists for the given maze.
+		Returns:
+			(bool): True if path from start to target exists, else False.
+		"""
 		queue = [self.start]
 		visited = []
 		while queue:
@@ -54,18 +59,44 @@ class Maze():
 		return False
 
 	def reset(self):
+		"""
+		Reset current position to beginning.
+		"""
 		self.current = self.start
 
 	def direction_name(self, n):
+		"""
+		Map int directions to their corresponding strings for printing
+		Args:
+		    n (int): Int corresponding to a direction.
+		Returns:
+			(string): String form of direction.
+		"""
 		if n == 0: return "^"
 		if n == 1: return "v"
 		if n == 2: return "<"
 		if n == 3: return ">"
 
-	def map_location(self, x,y):
+	def map_location(self, x, y):
+		"""
+		Given expected map location by human perception.
+		Args:
+		    x (int): Row coordinate on map
+		    y (int): Column coordinate on map
+		Returns:
+			(int): Item in map at the expected location
+		"""
 		return self.map[y][x]
 
 	def next(self, current_position, direction):
+		"""
+		Position reached if moved in direction from current_position
+		Args:
+		    current_position (int tuple): x, y coordinates of a position
+		    direction (int): Direction int
+		Returns:
+			(tuple): Destination coordinates after moving in direction from current_position
+		"""
 		if direction == 0:
 			y_next = current_position[1] - 1
 			if y_next < 0 or self.is_wall(current_position, 0):
@@ -88,9 +119,20 @@ class Maze():
 			return (x_next, current_position[1])
 
 	def move(self, direction):
+		"""
+		Move current position coordinate in the given direction.
+		"""
 		self.current = self.next(self.current, direction)
 
 	def is_wall(self, current_position, direction):
+		"""
+		Check if the object in direction from current_position is a wall
+		Args:
+		    current_position (int tuple): x, y coordinates of a position
+		    direction (int): Direction int
+		Returns:
+			(int): 1 if object in direction from current_position is a wall, else 0
+		"""
 		if direction == 0:
 			y_next = current_position[1] - 1
 			if y_next < 0 or self.map_location(current_position[0], y_next) == 1:
