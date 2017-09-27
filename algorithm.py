@@ -6,7 +6,12 @@ from models import resolve_model
 from rewards import resolve_reward
 from env import Maze, resolve_env
 
+# FIX: Converge to sub-optimal policy of moving right until stuck.
+# TODO: Resolve excpetions when std dev of rewards is 0 (Converged to policy).
 class NES():
+	"""
+	Implementation of NES algorithm by OpenAI: https://arxiv.org/pdf/1703.03864.pdf
+	"""
 
 	def __init__(self):
 		self.config = Config().config
@@ -26,16 +31,21 @@ class NES():
 		self.model = resolve_model(self.config['model'])
 		self.reward = resolve_reward(self.config['reward'])
 		self.master_params = self.model.init_master_params()
-		self.total_weighted_noise = np.zeros(len(self.master_params))
 
 	def run_simulation(self, sample_params, model):
+		"""
+		Black box interaction with environment using model as the action decider given environmental inputs.
+		Args:
+		    sample_params (tensor): Master parameters jittered with gaussian noise
+		    model (tensor): The output layer for a tensorflow model
+		Returns:
+			reward (float): Fitness function evaluated on the completed trajectory
+		"""
 		with tf.Session() as sess:
 			reward = 0
 			for t in range(self.config['n_timesteps_per_trajectory']):
 				inputs = np.array([self.env.current[0], self.env.current[1], self.env.target[0], self.env.target[1], self.env.is_wall(self.env.current, 0), self.env.is_wall(self.env.current, 1), self.env.is_wall(self.env.current, 2), self.env.is_wall(self.env.current, 3)]).reshape((1, 8))
 				action_dist = sess.run(model, self.model.feed_dict(inputs, sample_params))
-				# print("INPUTS:", inputs)
-				# print("ACTION DIST:", action_dist)
 				direction = np.argmax(action_dist)
 				self.env.move(direction)
 				reward += self.reward(self.env.current, self.env.target)
@@ -44,24 +54,28 @@ class NES():
 			return reward
 
 	def update(self, noise_samples, rewards):
-		alpha = self.config['learning_rate']
-		n_individuals = self.config['n_individuals']
-		sigma = self.config['noise_std_dev']
-		# print(np.std(rewards))
+		"""
+		Update function for the master parameters (weights and biases for neural network)
+		Args:
+		    noise_samples (float array): List of the noise samples for each individual in the population
+		    rewards (float array): List of rewards for each individual in the population
+		"""
+		# normalized_rewards = np.random.normal(0, 1, len(rewards))
 		# if np.std(rewards) == 0.0:
 		# 	print(rewards)
 		# 	print("NUM: ", (rewards - np.mean(rewards)))
 		# 	print("STD of Rewards = 0")
 		# 	sys.exit(1)
-		# normalized_rewards = np.random.normal(0, 1, len(rewards))
 		normalized_rewards = (rewards - np.mean(rewards))
-		# print(normalized_rewards)
 		if np.std(rewards) != 0.0:
 			normalized_rewards = (rewards - np.mean(rewards)) / np.std(rewards)
-		self.master_params += (alpha / (n_individuals * sigma)) * np.dot(noise_samples.T, normalized_rewards)
-		self.total_weighted_noise = np.zeros(len(self.master_params))
+		# print(normalized_rewards)
+		self.master_params += (self.config['learning_rate'] / (self.config['n_individuals'] * self.config['noise_std_dev'])) * np.dot(noise_samples.T, normalized_rewards)
 
 	def run(self):
+		"""
+		Run NES algorithm given parameters from config.
+		"""
 		model = self.model.model()
 		for p in range(self.config['n_populations']):
 			print("Population: {}".format(p+1))
