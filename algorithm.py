@@ -4,7 +4,7 @@ import tensorflow as tf
 from config import Config
 from models import resolve_model
 from rewards import resolve_reward
-from env import Maze, resolve_env
+from env import Maze, test_cases, resolve_env
 
 # FIX: Converge to sub-optimal policy of moving right until stuck.
 # TODO: Resolve excpetions when std dev of rewards is 0 (Converged to policy).
@@ -15,17 +15,7 @@ class NES():
 
 	def __init__(self):
 		self.config = Config().config
-		self.env = resolve_env(self.config['environment'])(
-			[[3,0,0,0,0,0,0,0,1,1],
-			 [1,0,0,0,1,0,1,0,1,1],
-			 [1,1,1,0,1,0,1,0,1,1],
-			 [1,1,1,0,0,0,0,0,1,1],
-			 [1,1,0,1,1,0,0,1,1,1],
-			 [1,1,0,1,1,0,0,0,1,1],
-			 [1,0,0,0,0,0,1,0,1,1],
-			 [1,1,1,0,1,0,1,0,1,1],
-			 [1,1,1,0,0,0,4,0,1,1],
-			 [1,1,1,1,1,1,0,0,1,1]])
+		self.env = resolve_env(self.config['environment'])(test_cases[self.config['environment']][0])
 		if not self.env.solution_exists():
 			raise Exception("No solution exists for the given environment.")
 		self.model = resolve_model(self.config['model'])

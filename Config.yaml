@@ -3,7 +3,7 @@ config:
   noise_std_dev: 0.4
   n_populations: 1000
   n_individuals: 20
-  n_timesteps_per_trajectory: 20
+  n_timesteps_per_trajectory: 7
 
   environment: "Maze"
   model: "FeedForwardNeuralNetwork"
