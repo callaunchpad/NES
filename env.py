@@ -1,3 +1,6 @@
+import logging
+import numpy as np
+
 def resolve_env(name):
 	envs = {
 		"Maze": Maze
@@ -43,6 +46,9 @@ class Maze():
 				else:
 					self.empty.append((i, j))
 		self.current = self.start
+		logging.info("Maze:")
+		logging.info("Target at {}".format(self.target))
+		logging.info(np.asmatrix(self.map))
 
 	def solution_exists(self):
 		"""
@@ -50,12 +56,12 @@ class Maze():
 		Returns:
 			(bool): True if path from start to target exists, else False.
 		"""
+		print(np.asmatrix(self.map))
 		queue = [self.start]
 		visited = []
 		while queue:
 			x, y = queue.pop(0)
 			visited.append((x, y))
-			print("Checked:", (x, y))
 			if self.map_location(x, y) == 4:
 				return True
 			for i in range(4):
