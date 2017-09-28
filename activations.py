@@ -4,6 +4,7 @@ class Activations():
 
 	def __init__(self):
 		self.map = {
+			"none": self.constant,
 			"selu": self.selu,
 			"softmax": self.softmax
 		}
@@ -27,4 +28,7 @@ class Activations():
 
 	def softmax(self, x):
 		return tf.nn.softmax(x)
+
+	def constant(self, x):
+		return x
 	

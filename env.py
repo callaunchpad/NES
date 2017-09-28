@@ -128,7 +128,9 @@ class Maze():
 		"""
 		Move current position coordinate in the given direction.
 		"""
+		past = self.current
 		self.current = self.next(self.current, direction)
+		return self.current != past
 
 	def is_wall(self, current_position, direction):
 		"""

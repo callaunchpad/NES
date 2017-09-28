@@ -33,12 +33,13 @@ class NES():
 		"""
 		with tf.Session() as sess:
 			reward = 0
+			moved = False
 			for t in range(self.config['n_timesteps_per_trajectory']):
-				inputs = np.array([self.env.current[0], self.env.current[1], self.env.target[0], self.env.target[1], self.env.is_wall(self.env.current, 0), self.env.is_wall(self.env.current, 1), self.env.is_wall(self.env.current, 2), self.env.is_wall(self.env.current, 3)]).reshape((1, 8))
+				inputs = np.array([self.env.current[0], self.env.current[1], self.env.target[0], self.env.target[1], self.env.is_wall(self.env.current, 0), self.env.is_wall(self.env.current, 1), self.env.is_wall(self.env.current, 2), self.env.is_wall(self.env.current, 3), t+1]).reshape((1, self.config['input_size']))
 				action_dist = sess.run(model, self.model.feed_dict(inputs, sample_params))
 				direction = np.argmax(action_dist)
-				self.env.move(direction)
-				reward += self.reward(self.env.current, self.env.target)
+				moved = self.env.move(direction)
+				reward += self.reward(self.env.current, self.env.target, moved)
 				print("Action: {}, Current Position: {}, Target Position: {}".format(self.env.direction_name(direction), self.env.current, self.env.target))
 			self.env.reset()
 			return reward
@@ -67,6 +68,7 @@ class NES():
 		Run NES algorithm given parameters from config.
 		"""
 		model = self.model.model()
+		n_reached_target = 0
 		for p in range(self.config['n_populations']):
 			print("Population: {}".format(p+1))
 			noise_samples = np.random.randn(self.config['n_individuals'], len(self.master_params))
@@ -75,6 +77,9 @@ class NES():
 				print("Individual: {}".format(i+1))
 				sample_params = self.master_params + noise_samples[i]
 				rewards[i] = self.run_simulation(sample_params, model)
+				if rewards[i] == 1:
+					n_reached_target += 1
 				print("Individual {} Reward: {}\n".format(i+1, rewards[i]))
 				print("Max master_params: {}".format(max(self.master_params)))
 			self.update(noise_samples, rewards)
+		print("REACHED TARGET {} TIMES".format(n_reached_target))
