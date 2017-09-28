@@ -3,14 +3,14 @@ config:
   noise_std_dev: 0.8
   n_populations: 500
   n_individuals: 5
-  n_timesteps_per_trajectory: 30
+  n_timesteps_per_trajectory: 10
 
   environment: "Maze"
-  environment_index: 1
+  environment_index: 0
   model: "FeedForwardNeuralNetwork"
   reward: "binary"
   hidden_layer_activation: "selu"
-  output_activation: "none"
+  output_activation: "softmax"
 
   n_hidden_layers: 1
   n_nodes_per_layer: 10

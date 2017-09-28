@@ -25,7 +25,7 @@ class NES():
 		self.model = resolve_model(self.config['model'])
 		self.reward = resolve_reward(self.config['reward'])
 		self.master_params = self.model.init_master_params()
-		logging.info("Reward:")
+		logging.info("\nReward:")
 		logging.info(inspect.getsource(self.reward) + "\n")
 
 	def run_simulation(self, sample_params, model):

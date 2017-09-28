@@ -46,8 +46,7 @@ class Maze():
 				else:
 					self.empty.append((i, j))
 		self.current = self.start
-		logging.info("Maze:")
-		logging.info("Target at {}".format(self.target))
+		logging.info("Maze: Target at {}".format(self.target))
 		logging.info(np.asmatrix(self.map))
 
 	def solution_exists(self):
