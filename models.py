@@ -29,20 +29,20 @@ class FeedForwardNeuralNetwork():
 		start += self.config['input_size'] * self.config['n_nodes_per_layer']
 		biases = tf.reshape(self.params[start : start + self.config['n_nodes_per_layer']], [self.config['n_nodes_per_layer']])
 		start += self.config['n_nodes_per_layer']
-		hidden_layer = self.activations.selu(tf.add(tf.matmul(self.inputs, weights), biases))
+		hidden_layer = self.activations.resolve_activation(self.config['hidden_layer_activation'])(tf.add(tf.matmul(self.inputs, weights), biases))
 
 		for i in range(self.config['n_hidden_layers']):
 			weights = tf.reshape(self.params[start : start + self.config['n_nodes_per_layer'] * self.config['n_nodes_per_layer']], [self.config['n_nodes_per_layer'], self.config['n_nodes_per_layer']])
 			start += self.config['n_nodes_per_layer'] * self.config['n_nodes_per_layer']
 			biases = tf.reshape(self.params[start : start + self.config['n_nodes_per_layer']], [self.config['n_nodes_per_layer']])
 			start += self.config['n_nodes_per_layer']
-			hidden_layer = self.activations.selu(tf.add(tf.matmul(hidden_layer, weights), biases))
+			hidden_layer = self.activations.resolve_activation(self.config['hidden_layer_activation'])(tf.add(tf.matmul(hidden_layer, weights), biases))
 
 		weights = tf.reshape(self.params[start : start + self.config['n_nodes_per_layer'] * self.config['output_size']], [self.config['n_nodes_per_layer'], self.config['output_size']])
 		start += self.config['n_nodes_per_layer'] * self.config['output_size']
 		biases = tf.reshape(self.params[start : start + self.config['output_size']], [self.config['output_size']])
 		start += self.config['output_size']
-		output_layer = tf.add(tf.matmul(hidden_layer, weights), biases)
+		output_layer = self.activations.resolve_activation(self.config['output_activation'])(tf.add(tf.matmul(hidden_layer, weights), biases))
 		return output_layer
 
 	def init_master_params(self):
