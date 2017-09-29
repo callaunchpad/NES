@@ -1,7 +1,7 @@
 config:
   learning_rate: 0.2
-  noise_std_dev: 0.8
-  n_populations: 500
+  noise_std_dev: 0.4
+  n_populations: 1000
   n_individuals: 5
   n_timesteps_per_trajectory: 10
 
