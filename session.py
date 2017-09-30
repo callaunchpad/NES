@@ -9,7 +9,7 @@ from shutil import copyfile, rmtree
 from datetime import datetime
 from algorithm import NES
 
-def config():
+def config(log_file):
 	logging.basicConfig(filename=log_file, level=logging.DEBUG, format='%(message)s')
 	warnings.simplefilter('ignore', np.RankWarning)
 
@@ -33,9 +33,9 @@ def create_training_contents():
 	return training_directory, log_file, timestamp
 
 if __name__ == "__main__":
-	config()
 	args = get_args()
 	training_directory, log_file, timestamp = create_training_contents()
+	config(log_file)
 	copyfile("Config.yaml", training_directory + timestamp + ".yaml")
 
 	try:
