@@ -1,12 +1,17 @@
 import os
 import sys
 import logging
+import warnings
 import argparse
 import numpy as np
 import tensorflow as tf
 from shutil import copyfile, rmtree
 from datetime import datetime
 from algorithm import NES
+
+def config():
+	logging.basicConfig(filename=log_file, level=logging.DEBUG, format='%(message)s')
+	warnings.simplefilter('ignore', np.RankWarning)
 
 def set_seeds(seed):
 	np.random.seed(0)
@@ -28,10 +33,9 @@ def create_training_contents():
 	return training_directory, log_file, timestamp
 
 if __name__ == "__main__":
+	config()
 	args = get_args()
-
 	training_directory, log_file, timestamp = create_training_contents()
-	logging.basicConfig(filename=log_file, level=logging.DEBUG, format='%(message)s')
 	copyfile("Config.yaml", training_directory + timestamp + ".yaml")
 
 	try:
@@ -47,5 +51,5 @@ if __name__ == "__main__":
 		sys.exit(1)
 	
 	if args.d:
-		print("\nnDeleted: {}".format(training_directory))
+		print("\nDeleted Training Folder: {}".format(training_directory))
 		rmtree(training_directory)
