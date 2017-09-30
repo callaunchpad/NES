@@ -83,12 +83,16 @@ class NES():
 			self.update(noise_samples, rewards)
 			n_reached_target.append(n_individual_target_reached)
 			population_rewards.append(sum(rewards)/len(rewards))
-			self.plot_graphs([range(p+1), range(p+1)], [population_rewards, n_reached_target], ["Average Reward per population", "Number of times target reached per Population"], ["reward.png", "success.png"])
+			self.plot_graphs([range(p+1), range(p+1)], [population_rewards, n_reached_target], ["Average Reward per population", "Number of times target reached per Population"], ["reward.png", "success.png"], ["line", "scatter"])
 		logging.info("Reached Target {} Total Times".format(sum(n_reached_target)))
 
-	def plot_graphs(self, x_axes, y_axes, titles, filenames):
+	def plot_graphs(self, x_axes, y_axes, titles, filenames, types):
 		for i in range(len(x_axes)):
 			plt.title(titles[i])
-			plt.plot(x_axes[i], y_axes[i])
+			if types[i] == "line":
+				plt.plot(x_axes[i], y_axes[i])
+			if types[i] == "scatter":
+				plt.scatter(x_axes[i], y_axes[i])
+				plt.plot(np.unique(x_axes[i]), np.poly1d(np.polyfit(x_axes[i], y_axes[i], 1))(np.unique(x_axes[i])))
 			plt.savefig(self.training_directory + filenames[i])
 			plt.clf()
